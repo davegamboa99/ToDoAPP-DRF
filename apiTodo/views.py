@@ -14,6 +14,30 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 def todoList(request):
-    todo = Todo.objects.all()
-    serializer = TodoSerializer(todo, many=True)
+    queryset = Todo.objects.all()
+    serializer = TodoSerializer(queryset, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def todoListCreate(request):
+    serializer = TodoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)   
+
+@api_view(['POST', 'GET'])
+def todoListUpdate(request, pk):
+    queryset = Todo.objects.get(id=pk)
+    serializer = TodoSerializer(instance = queryset, data = request.data)
+    
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def todoDelete(request, pk):
+    queryset = Todo.objects.get(id=pk)
+    queryset.delete()
+
+    return Response(serializer.data,"Item deleted")
+
